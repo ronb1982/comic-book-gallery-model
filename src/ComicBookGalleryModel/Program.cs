@@ -19,42 +19,61 @@ namespace ComicBookGalleryModel
                 // to the Output window for debugging purposes
                 context.Database.Log = (message) => Debug.WriteLine(message);
 
-                // EAGER LOAD - Get all comic books -include any relational objects.
-                    // Executes a single query to get all data.
-                /*var comicBooks = context.ComicBooks
-                    .Include(cb => cb.Series)
-                    .Include(cb => cb.Artists.Select(a => a.Artist))
-                    .Include(cb => cb.Artists.Select(a => a.Role))
-                    .ToList();*/
+                var comicBookId = 1;
 
-                // LAZY LOAD - Get all comic books -include any relational objects
-                    // Make related navigational properties "virtual" in the ComicBook and
-                    // ComicBookArtist classes in order for Entity Framework to create
-                    // dynamic proxies. These dynamic proxies are child classes that
-                    // EF creates to access relational data at runtime.
-                    // A SQL query is executed every time an object reference is used.
-                var comicBooks = context.ComicBooks.ToList();
+                // Finds the entity in the context. If it does not exist in the context,
+                // it will search for a match in the database.
+                //var comicBook1 = context.ComicBooks.Find(comicBookId);
+                //var comicBook2 = context.ComicBooks.Find(comicBookId);
 
-                foreach (var comicBook in comicBooks)
-                {
-                    // EXPLICIT LOADING
-                        // Explicitly call Load() on an Entry object's Reference or Collection
-                        // navigational property. Check for null before calling this operation
-                        // to load a new entity into memory.
-                    if (comicBook.Series == null)
-                    {
-                        context.Entry(comicBook)
-                            .Reference(cb => cb.Series)
-                            .Load();
-                    }
+                var comicBook1 = context.ComicBooks
+                    .SingleOrDefault(cb => cb.Id == comicBookId); // FirstOrDefault, Single, First
 
-                    var artistRoleNames = comicBook.Artists
-                        .Select(a => $"{a.Artist.Name} - {a.Role.Name}").ToList();
-                    var artistRolesDisplayText = string.Join(", ", artistRoleNames);
+                Debug.WriteLine("Changing the Description property value: ");
+                comicBook1.Description = "New value!";
 
-                    Console.WriteLine(comicBook.DisplayText);
-                    Console.WriteLine(artistRolesDisplayText);
-                }
+                var comicBook2 = context.ComicBooks
+                    .SingleOrDefault(cb => cb.Id == comicBookId);
+
+                
+
+
+                //// EAGER LOAD - Get all comic books -include any relational objects.
+                //    // Executes a single query to get all data.
+                ///*var comicBooks = context.ComicBooks
+                //    .Include(cb => cb.Series)
+                //    .Include(cb => cb.Artists.Select(a => a.Artist))
+                //    .Include(cb => cb.Artists.Select(a => a.Role))
+                //    .ToList();*/
+
+                //// LAZY LOAD - Get all comic books -include any relational objects
+                //    // Make related navigational properties "virtual" in the ComicBook and
+                //    // ComicBookArtist classes in order for Entity Framework to create
+                //    // dynamic proxies. These dynamic proxies are child classes that
+                //    // EF creates to access relational data at runtime.
+                //    // A SQL query is executed every time an object reference is used.
+                //var comicBooks = context.ComicBooks.ToList();
+
+                //foreach (var comicBook in comicBooks)
+                //{
+                //    // EXPLICIT LOADING
+                //        // Explicitly call Load() on an Entry object's Reference or Collection
+                //        // navigational property. Check for null before calling this operation
+                //        // to load a new entity into memory.
+                //    if (comicBook.Series == null)
+                //    {
+                //        context.Entry(comicBook)
+                //            .Reference(cb => cb.Series)
+                //            .Load();
+                //    }
+
+                //    var artistRoleNames = comicBook.Artists
+                //        .Select(a => $"{a.Artist.Name} - {a.Role.Name}").ToList();
+                //    var artistRolesDisplayText = string.Join(", ", artistRoleNames);
+
+                //    Console.WriteLine(comicBook.DisplayText);
+                //    Console.WriteLine(artistRolesDisplayText);
+                //}
 
                 Console.ReadLine();
             }
