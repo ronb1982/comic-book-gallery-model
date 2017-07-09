@@ -26,11 +26,14 @@ namespace ComicBookGalleryModel
         // SEE App.config connectionString node
 
         public Context()
-        { 
+        {
             // Drop and create database every time the model changes
             //Database.SetInitializer(new DropCreateDatabaseIfModelChanges<Context>());
             //Database.SetInitializer(new CreateDatabaseIfNotExists<Context>());
-            Database.SetInitializer(new DropCreateDatabaseAlways<Context>());
+            //Database.SetInitializer(new DropCreateDatabaseAlways<Context>());
+
+            // Call the custom DatabaseInitializer class in order to set seed data
+            Database.SetInitializer(new DatabaseInitializer());
         }
 
         public DbSet<ComicBook> ComicBooks { get; set; }
