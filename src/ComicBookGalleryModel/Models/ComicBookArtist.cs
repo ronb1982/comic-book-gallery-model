@@ -16,8 +16,8 @@ namespace ComicBookGalleryModel.Models
         public int RoleId { get; set; }
 
         // Navigation properties
-        public ComicBook ComicBook { get; set; }
-        public Artist Artist { get; set; }
-        public Role Role { get; set; }
+        public virtual ComicBook ComicBook { get; set; }
+        public virtual Artist Artist { get; set; }
+        public virtual Role Role { get; set; }
     }
 }

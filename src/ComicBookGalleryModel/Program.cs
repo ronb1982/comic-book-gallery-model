@@ -19,62 +19,42 @@ namespace ComicBookGalleryModel
                 // to the Output window for debugging purposes
                 context.Database.Log = (message) => Debug.WriteLine(message);
 
-                //var comicBooks = context.ComicBooks.ToList();
-
-                // Filter comic books by title where title contains the word "man"
+                // EAGER LOAD - Get all comic books -include any relational objects.
+                    // Executes a single query to get all data.
                 /*var comicBooks = context.ComicBooks
-                                 .Include(cb => cb.Series)
-                                 .Where(cb => cb.Series.Title.Contains("man"))
-                                 .ToList();*/
+                    .Include(cb => cb.Series)
+                    .Include(cb => cb.Artists.Select(a => a.Artist))
+                    .Include(cb => cb.Artists.Select(a => a.Role))
+                    .ToList();*/
 
-                // Sort by issue number descending
-                //var comicBooks = context.ComicBooks
-                //    .Include(cb => cb.Series)
-                //    .OrderByDescending(cb => cb.IssueNumber)
-                //    .ThenBy(cb => cb.PublishedOn)
-                //    .ToList();
-
-                var comicBooksQuery = context.ComicBooks
-                    .Include(cb => cb.Series) // Eager load Series entity
-                    .OrderByDescending(cb => cb.IssueNumber);
-
-                var comicBooks = comicBooksQuery.ToList();
-
-                var comicBooks2 = comicBooksQuery
-                    .Where(cb => cb.AverageRating < 7)
-                    .ToList();
+                // LAZY LOAD - Get all comic books -include any relational objects
+                    // Make related navigational properties "virtual" in the ComicBook and
+                    // ComicBookArtist classes in order for Entity Framework to create
+                    // dynamic proxies. These dynamic proxies are child classes that
+                    // EF creates to access relational data at runtime.
+                    // A SQL query is executed every time an object reference is used.
+                var comicBooks = context.ComicBooks.ToList();
 
                 foreach (var comicBook in comicBooks)
                 {
+                    // EXPLICIT LOADING
+                        // Explicitly call Load() on an Entry object's Reference or Collection
+                        // navigational property. Check for null before calling this operation
+                        // to load a new entity into memory.
+                    if (comicBook.Series == null)
+                    {
+                        context.Entry(comicBook)
+                            .Reference(cb => cb.Series)
+                            .Load();
+                    }
+
+                    var artistRoleNames = comicBook.Artists
+                        .Select(a => $"{a.Artist.Name} - {a.Role.Name}").ToList();
+                    var artistRolesDisplayText = string.Join(", ", artistRoleNames);
+
                     Console.WriteLine(comicBook.DisplayText);
+                    Console.WriteLine(artistRolesDisplayText);
                 }
-
-                Console.WriteLine();
-                Console.WriteLine("# of comic books: {0}", comicBooks.Count);
-                Console.WriteLine();
-
-                foreach (var comicBook in comicBooks2)
-                {
-                    Console.WriteLine(comicBook.DisplayText);
-                }
-
-                Console.WriteLine();
-                Console.WriteLine("# of comic books: {0}", comicBooks2.Count);
-
-                //// Get all comic books - include any relational objects
-                //var comicBooks = context.ComicBooks
-                //    .Include(cb => cb.Series)
-                //    .Include(cb => cb.Artists.Select(a => a.Artist))
-                //    .Include(cb => cb.Artists.Select(a => a.Role))
-                //    .ToList();
-
-                //foreach (var comicBook in comicBooks)
-                //{
-                //    var artistRoleNames = comicBook.Artists.Select(a => $"{a.Artist.Name} - {a.Role.Name}").ToList();
-                //    var artistRolesDisplayText = string.Join(", ", artistRoleNames);
-                //    Console.WriteLine(comicBook.DisplayText);
-                //    Console.WriteLine(artistRolesDisplayText);
-                //}
 
                 Console.ReadLine();
             }
