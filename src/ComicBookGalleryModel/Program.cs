@@ -16,7 +16,7 @@ namespace ComicBookGalleryModel
             using (var context = new Context())
             {
                 // This line will output any SQL or database-related queries and operations
-                // to the Output window for debugging purposes.
+                // to the Output window for debugging purposes
                 context.Database.Log = (message) => Debug.WriteLine(message);
 
                 //var comicBooks = context.ComicBooks.ToList();
