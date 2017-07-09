@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,5 +34,22 @@ namespace ComicBookGalleryModel
         }
 
         public DbSet<ComicBook> ComicBooks { get; set; }
+
+        // Use OnModelCreating() to customize Entity Framework's default model conventions
+        // and to use the Fluent API to refine the EF model.
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+
+            /* Changes every decimal column in the database. Not recommended if
+             * more than ONE decimal DB field exists. Use Fluent API instead. */
+            //modelBuilder.Conventions.Remove<DecimalPropertyConvention>();
+            //modelBuilder.Conventions.Add(new DecimalPropertyConvention(5, 2));
+
+            // Set precision and scale on AverageRating decimal field via Fluent API.
+            modelBuilder.Entity<ComicBook>()
+                .Property(cb => cb.AverageRating)
+                .HasPrecision(5, 2);
+        }
     }
 }

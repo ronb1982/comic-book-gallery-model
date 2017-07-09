@@ -9,6 +9,11 @@ namespace ComicBookGalleryModel.Models
 {
     public class ComicBook
     {
+        public ComicBook()
+        {
+            Artists = new List<ComicBookArtist>();
+        }
+
         public int Id { get; set; }
 
         // Foreign key property that will force this foreign key DB field to be non-nullable
@@ -21,7 +26,7 @@ namespace ComicBookGalleryModel.Models
         // Navigation property
         public Series Series { get; set; }
 
-        public ICollection<Artist> Artists { get; set; }
+        public ICollection<ComicBookArtist> Artists { get; set; }
 
         public string DisplayText
         {
@@ -33,9 +38,13 @@ namespace ComicBookGalleryModel.Models
             }
         }
 
-        public ComicBook()
+        public void AddArtist(Artist artist, Role role)
         {
-            Artists = new List<Artist>();
+            Artists.Add(new ComicBookArtist()
+            {
+                Artist = artist,
+                Role = role
+            });
         }
     }
 }
